@@ -1,0 +1,13 @@
+account_id,transaction_id,timestamp,amount,merchant,location
+acct_101,txn_9001,2026-01-10 10:01:11,120.50,Amazon,New York
+acct_101,txn_9002,2026-01-10 10:01:25,80.00,Starbucks,New York
+acct_101,txn_9003,2026-01-10 10:01:40,6000.00,Apple Store,New York
+acct_202,txn_9101,2026-01-10 10:01:45,50.00,Uber,London
+acct_202,txn_9102,2026-01-10 10:01:55,75.00,Uber Eats,London
+acct_202,txn_9103,2026-01-10 10:02:05,90.00,Amazon,Paris
+acct_303,txn_9201,2026-01-10 10:02:10,40.00,McDonalds,Dubai
+acct_303,txn_9202,2026-01-10 10:02:20,45.00,McDonalds,Dubai
+acct_303,txn_9203,2026-01-10 10:02:30,50.00,McDonalds,Dubai
+acct_303,txn_9204,2026-01-10 10:02:40,55.00,McDonalds,Dubai
+acct_303,txn_9205,2026-01-10 10:02:50,60.00,McDonalds,Dubai
+acct_303,txn_9206,2026-01-10 10:03:00,65.00,McDonalds,Dubai

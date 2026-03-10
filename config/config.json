@@ -1,0 +1,6 @@
+{
+  "max_transactions_per_minute": 5,
+  "max_single_transaction": 5000,
+  "recent_window_minutes": 1,
+  "new_location_alert": true
+}
