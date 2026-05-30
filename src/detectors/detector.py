@@ -7,36 +7,59 @@ def check_rules(
     config: Dict = None
 ) -> List[Dict]:
     """
-    Apply rule-based fraud checks to a single transaction.
-    Returns a list of alerts (can be multiple reasons for same txn).
+    Rule-based fraud detection engine for a single transaction.
+
+    Evaluates a transaction against predefined heuristics and returns
+    a list of alerts if any rules are violated.
+
+    This function is designed to be stateless and works using:
+        - The current transaction
+        - Snapshot of account state BEFORE the transaction
+        - Configuration-defined thresholds
 
     Args:
-        txn (Dict): Transaction dictionary with keys:
-            - account_id
-            - transaction_id
-            - timestamp
-            - amount
-            - location
-        account_stats_before_txn (Dict): Stats BEFORE adding this transaction
-            (needed for correct 'new location' detection)
-        config (Dict): Configuration dictionary with thresholds.
+        txn (Dict):
+            Transaction record containing:
+                - account_id
+                - transaction_id
+                - timestamp
+                - amount
+                - location
+
+        account_stats_before_txn (Optional[Dict]):
+            Snapshot of account activity BEFORE this transaction was applied.
+            Used for detecting anomalies such as frequency spikes or location changes.
+
+        config (Dict):
+            Rule configuration dictionary containing thresholds such as:
+                - max_transactions_per_minute
+                - max_single_transaction
+                - new_location_alert
 
     Returns:
-        List[Dict]: List of alert dictionaries.
+        List[Dict]:
+            A list of triggered alert objects. Each alert contains:
+                - timestamp
+                - account_id
+                - transaction_id
+                - reason
     """
+
     if config is None:
         config = {}
 
     alerts = []
 
+    # Load rule thresholds with safe defaults
     max_txn_per_min = config.get("max_transactions_per_minute", 5)
     max_single_txn = config.get("max_single_transaction", 5000)
     new_location_alert = config.get("new_location_alert", True)
 
+    # Extract prior account state (if available)
     txn_count = account_stats_before_txn.get("transaction_count", 0) if account_stats_before_txn else 0
     last_location = account_stats_before_txn.get("last_location") if account_stats_before_txn else None
 
-    # Rule 1: too many transactions in recent window
+    # Rule 1: Detect high transaction frequency within time window
     if txn_count + 1 > max_txn_per_min:
         alerts.append({
             "timestamp": txn["timestamp"],
@@ -45,7 +68,7 @@ def check_rules(
             "reason": "High transaction frequency",
         })
 
-    # Rule 2: single transaction too large
+    # Rule 2: Detect unusually large transaction amounts
     if float(txn["amount"]) > max_single_txn:
         alerts.append({
             "timestamp": txn["timestamp"],
@@ -54,7 +77,7 @@ def check_rules(
             "reason": "High transaction amount",
         })
 
-    # Rule 3: new location for this account
+    # Rule 3: Detect location anomaly for account
     if new_location_alert:
         if last_location and last_location != txn["location"]:
             alerts.append({
